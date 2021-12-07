@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CollisionHandler : MonoBehaviour
 {
@@ -15,11 +17,28 @@ public class CollisionHandler : MonoBehaviour
                 Debug.Log("Fuel");
                 break;
             case "Finish":
-                Debug.Log("Finish");
+                LoadNextLevel();
                 break;
-            default:
-                Debug.Log("Blew up");   
+            default: 
+                ReloadLevel();                
                 break;
         }
+    }
+
+    private void LoadNextLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        if(nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex= 0;
+        }
+        SceneManager.LoadScene(nextSceneIndex);
+    }
+
+    private void ReloadLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);  
     }
 }
