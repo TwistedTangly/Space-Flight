@@ -48,15 +48,14 @@ public class CollisionHandler : MonoBehaviour
 
     void StartCrashSequence()
     {
-        isTransistioning = true;
-        myAudioSource.Stop();
         movement.StopSideThrusters();
         movement.StopThruster();
+        isTransistioning = true;
+        myAudioSource.Stop(); 
         movement.enabled = false;        
         GetComponent<MeshRenderer>().enabled = false;
         lThruster.active = false;
         rThruster.active = false;
-
         myRigidbody.constraints = RigidbodyConstraints.FreezeAll;
         explosionParticles.Play();
         myAudioSource.PlayOneShot(CrashAudio);
@@ -65,11 +64,11 @@ public class CollisionHandler : MonoBehaviour
 
     void StartSuccessSequence()
     {
-        isTransistioning = true;
-        myAudioSource.Stop();
-        myAudioSource.PlayOneShot(SuccessAudio);
         movement.StopSideThrusters();
         movement.StopThruster();
+        isTransistioning = true;
+        myAudioSource.Stop();
+        myAudioSource.PlayOneShot(SuccessAudio);;
         movement.enabled = false; 
         Invoke("LoadNextLevel", levelLoadDelaySccess);
     }

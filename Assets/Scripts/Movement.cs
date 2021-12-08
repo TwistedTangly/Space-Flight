@@ -7,18 +7,23 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] float thrustForce = 1000f;
     [SerializeField] float rotationTrustForce = 100f;
-    [SerializeField] AudioClip mainEngine;
+    [SerializeField] AudioClip mainEngineAudio;
+    [SerializeField] AudioClip sideEngineAudio;
     [SerializeField] ParticleSystem leftThruster;
     [SerializeField] ParticleSystem rightThruster;
     [SerializeField] ParticleSystem mainThruster;
 
     Rigidbody myRigidbody;
-    AudioSource myAudioSource;
+    AudioSource[] myAudioSource;
+    AudioSource audioSourceA;
+    AudioSource audioSourceB;
 
     void Start()
     {
         myRigidbody = GetComponent<Rigidbody>();
-        myAudioSource = GetComponent<AudioSource>();
+        myAudioSource = GetComponents<AudioSource>();
+        audioSourceA = myAudioSource[0];
+        audioSourceB = myAudioSource[1];
     }
 
     void Update()
@@ -29,48 +34,49 @@ public class Movement : MonoBehaviour
 
     private void ProcessThrust()
     {
-        if(Input.GetKey(KeyCode.Space)) 
+        if(Input.GetKey(KeyCode.Space))
         {
-            myRigidbody.AddRelativeForce(Vector3.up * thrustForce * Time.deltaTime);
-            if(!myAudioSource.isPlaying)
-            {
-                myAudioSource.PlayOneShot(mainEngine);
-            } 
-            if(!mainThruster.isEmitting)
-            {
-                mainThruster.Play();
-            }           
-        }        
+            StartThrusting();
+        }
         else
-        {
-            myAudioSource.Stop();
-            
+        {        
             StopThruster();
+        }
+    }
+
+    void StartThrusting()
+    {
+        myRigidbody.AddRelativeForce(Vector3.up * thrustForce * Time.deltaTime);
+        PlayThrusterAudio();
+        if (!mainThruster.isEmitting)
+        {
+            mainThruster.Play();
+        }
+    }
+
+    private void PlayThrusterAudio()
+    {
+        if (!audioSourceA.isPlaying)
+        {
+            audioSourceA.PlayOneShot(mainEngineAudio);
         }
     }
 
     public void StopThruster()
     {
+        audioSourceA.Stop();    
         mainThruster.Stop();
     }
 
-    private void ProcessRotation()
+    void ProcessRotation()
     {
         if(Input.GetKey(KeyCode.A))
         {
-            ApplyRotation(rotationTrustForce);
-            if(!rightThruster.isEmitting)
-            {
-                rightThruster.Play();
-            }
+            RotateLeft();
         }
-        else if(Input.GetKey(KeyCode.D)) 
+        else if(Input.GetKey(KeyCode.D))
         {
-            ApplyRotation(-rotationTrustForce);
-            if(!leftThruster.isEmitting)
-            {
-                leftThruster.Play();
-            }
+            RotateRight();
         }
         else
         {           
@@ -78,10 +84,32 @@ public class Movement : MonoBehaviour
         }
     }
 
-    public void StopSideThrusters()
+    private void RotateRight()
     {
-        rightThruster.Stop();
-        leftThruster.Stop();
+        ApplyRotation(-rotationTrustForce);
+        PlaySideThrusterAudio();
+        if (!leftThruster.isEmitting)
+        {
+            leftThruster.Play();
+        }
+    }
+
+    private void PlaySideThrusterAudio()
+    {
+        if (!audioSourceB.isPlaying)
+        {
+            audioSourceB.PlayOneShot(sideEngineAudio, 0.5f);
+        }
+    }
+
+    private void RotateLeft()
+    {
+        ApplyRotation(rotationTrustForce);
+        PlaySideThrusterAudio();
+        if (!rightThruster.isEmitting)
+        {
+            rightThruster.Play();
+        }
     }
 
     private void ApplyRotation(float roationThisFrame)
@@ -91,5 +119,13 @@ public class Movement : MonoBehaviour
         myRigidbody.constraints = RigidbodyConstraints.FreezeRotationX | 
                                   RigidbodyConstraints.FreezeRotationY | 
                                   RigidbodyConstraints.FreezePositionZ;
+    }
+
+
+    public void StopSideThrusters()
+    {
+        audioSourceB.Stop();
+        rightThruster.Stop();
+        leftThruster.Stop();
     }
 }
