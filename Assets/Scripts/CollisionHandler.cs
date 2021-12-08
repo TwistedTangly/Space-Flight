@@ -6,9 +6,15 @@ using UnityEngine.SceneManagement;
 
 public class CollisionHandler : MonoBehaviour
 {
-    [SerializeField] float levelLoadDelay = 1f;
+    Rigidbody myRigidbody;
+    Movement movement;
+    [SerializeField] float levelLoadDelaySccess = 3f;
+    [SerializeField] float levelLoadDelayFail = 1f;
     [SerializeField] AudioClip CrashAudio;
     [SerializeField] AudioClip SuccessAudio;
+    [SerializeField] ParticleSystem explosionParticles;
+    [SerializeField] GameObject lThruster;
+    [SerializeField] GameObject rThruster;
 
     AudioSource myAudioSource;
 
@@ -16,6 +22,8 @@ public class CollisionHandler : MonoBehaviour
     private void Start() 
     {
         myAudioSource = GetComponent<AudioSource>();
+        myRigidbody = GetComponent<Rigidbody>();
+        movement = GetComponent<Movement>();
     }
     private void OnCollisionEnter(Collision other) 
     {
@@ -42,9 +50,17 @@ public class CollisionHandler : MonoBehaviour
     {
         isTransistioning = true;
         myAudioSource.Stop();
-         GetComponent<Movement>().enabled = false;
+        movement.StopSideThrusters();
+        movement.StopThruster();
+        movement.enabled = false;        
+        GetComponent<MeshRenderer>().enabled = false;
+        lThruster.active = false;
+        rThruster.active = false;
+
+        myRigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        explosionParticles.Play();
         myAudioSource.PlayOneShot(CrashAudio);
-        Invoke("ReloadLevel", levelLoadDelay);  
+        Invoke("ReloadLevel", levelLoadDelayFail);  
     }
 
     void StartSuccessSequence()
@@ -52,8 +68,10 @@ public class CollisionHandler : MonoBehaviour
         isTransistioning = true;
         myAudioSource.Stop();
         myAudioSource.PlayOneShot(SuccessAudio);
-        GetComponent<Movement>().enabled = false;
-        Invoke("LoadNextLevel", levelLoadDelay);
+        movement.StopSideThrusters();
+        movement.StopThruster();
+        movement.enabled = false; 
+        Invoke("LoadNextLevel", levelLoadDelaySccess);
     }
 
     private void LoadNextLevel()
