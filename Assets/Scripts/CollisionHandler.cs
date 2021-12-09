@@ -8,6 +8,9 @@ public class CollisionHandler : MonoBehaviour
 {
     Rigidbody myRigidbody;
     Movement movement;
+    BoxCollider myBoxCollider;
+    MeshRenderer myMeshRenderer;
+    CapsuleCollider myCapsuleCollider;
     [SerializeField] float levelLoadDelaySccess = 3f;
     [SerializeField] float levelLoadDelayFail = 1f;
     [SerializeField] AudioClip CrashAudio;
@@ -19,15 +22,53 @@ public class CollisionHandler : MonoBehaviour
     AudioSource myAudioSource;
 
     bool isTransistioning = false;
+    bool collisonDisabled = false;
     private void Start() 
     {
         myAudioSource = GetComponent<AudioSource>();
         myRigidbody = GetComponent<Rigidbody>();
         movement = GetComponent<Movement>();
+        myBoxCollider = GetComponent<BoxCollider>();
+        myCapsuleCollider = GetComponent<CapsuleCollider>();
+        myMeshRenderer = GetComponent<MeshRenderer>();
     }
+    private void Update() 
+    {
+        LoadNextLevelOnKeyPress();
+        DisableCollision();
+    }
+
+    private void DisableCollision()
+    {
+        if(Input.GetKeyDown(KeyCode.C))
+        {
+            collisonDisabled = !collisonDisabled; //toggle from one state to the other - true to false - false to true
+            Debug.Log("Collion changed");
+            if(collisonDisabled)
+            {
+                myMeshRenderer.materials[2].color = Color.white;
+            }
+            else
+            {
+                myMeshRenderer.materials[2].color = Color.red;
+            }
+            //completelydisable the collisons to pass throught objects
+            //myCapsuleCollider.enabled = false;
+            //myBoxCollider.enabled = false;
+        }
+    }
+
+    private void LoadNextLevelOnKeyPress()
+    {
+        if(Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+    }
+
     private void OnCollisionEnter(Collision other) 
     {
-        if(isTransistioning){return;}
+        if(isTransistioning || collisonDisabled){return;}
         
         switch(other.gameObject.tag)
         {
