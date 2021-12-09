@@ -26,8 +26,8 @@ public class Movement : MonoBehaviour
         myAudioSource = GetComponents<AudioSource>();
         audioSourceA = myAudioSource[0];
         audioSourceB = myAudioSource[1];
-        pointLight.active = false;
-        spotLight.active = false;
+        pointLight.SetActive(false);
+        spotLight.SetActive(false);
     }
 
     void FixedUpdate()
@@ -56,8 +56,8 @@ public class Movement : MonoBehaviour
         {
             mainThruster.Play();
         }
-        pointLight.active = true;
-        spotLight.active = true;
+        pointLight.SetActive(true);
+        spotLight.SetActive(true);
     }
 
     private void PlayThrusterAudio()
@@ -72,8 +72,8 @@ public class Movement : MonoBehaviour
     {
         audioSourceA.Stop();    
         mainThruster.Stop();
-        pointLight.active = false;
-        spotLight.active = false;
+        pointLight.SetActive(false);
+        spotLight.SetActive(false);
     }
 
     void ProcessRotation()

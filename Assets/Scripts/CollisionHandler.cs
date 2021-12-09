@@ -95,8 +95,8 @@ public class CollisionHandler : MonoBehaviour
         myAudioSource.Stop(); 
         movement.enabled = false;        
         GetComponent<MeshRenderer>().enabled = false;
-        lThruster.active = false;
-        rThruster.active = false;
+        lThruster.SetActive(false);
+        rThruster.SetActive(false);
         myRigidbody.constraints = RigidbodyConstraints.FreezeAll;
         explosionParticles.Play();
         myAudioSource.PlayOneShot(CrashAudio);
