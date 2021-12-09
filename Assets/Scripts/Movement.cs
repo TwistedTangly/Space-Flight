@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    [SerializeField] GameObject spotLight;
+    [SerializeField] GameObject pointLight;
     [SerializeField] float thrustForce = 1000f;
     [SerializeField] float rotationTrustForce = 100f;
     [SerializeField] AudioClip mainEngineAudio;
@@ -24,9 +26,11 @@ public class Movement : MonoBehaviour
         myAudioSource = GetComponents<AudioSource>();
         audioSourceA = myAudioSource[0];
         audioSourceB = myAudioSource[1];
+        pointLight.active = false;
+        spotLight.active = false;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         ProcessThrust();
         ProcessRotation();
@@ -52,6 +56,8 @@ public class Movement : MonoBehaviour
         {
             mainThruster.Play();
         }
+        pointLight.active = true;
+        spotLight.active = true;
     }
 
     private void PlayThrusterAudio()
@@ -66,6 +72,8 @@ public class Movement : MonoBehaviour
     {
         audioSourceA.Stop();    
         mainThruster.Stop();
+        pointLight.active = false;
+        spotLight.active = false;
     }
 
     void ProcessRotation()
